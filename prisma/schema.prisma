@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Supplier {
+  id        String  @id @default(uuid())
+  name      String  @unique(map: "supplier_name_unique")
+  status    String  @default("active")
+  skus      Sku[]
+  pos       Po[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Sku {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  category    String
+  cost        Decimal
+  supplier    Supplier @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  supplierId  String
+  leadTime    Int
+  pos         Po[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([name, supplierId], map: "sku_name_supplier_unique")
+  @@index([supplierId])
+  @@index([category])
+}
+
+model Po {
+  id          String   @id @default(uuid())
+  sku         Sku      @relation(fields: [skuId], references: [id], onDelete: Restrict)
+  skuId       String
+  supplier    Supplier @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  supplierId  String
+  quantity    Int
+  status      String   @default("draft")
+  eta         DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  inbounds    Inbound[]
+
+  @@index([skuId])
+  @@index([supplierId])
+  @@index([status])
+}
+
+model Inbound {
+  id             String    @id @default(uuid())
+  po             Po        @relation(fields: [poId], references: [id], onDelete: Restrict)
+  poId           String
+  courier        String
+  trackingNumber String
+  eta            DateTime?
+  status         String    @default("in_transit")
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([poId])
+  @@index([status])
+}
+
