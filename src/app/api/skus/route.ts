@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 const SkuSchema = z.object({
@@ -21,9 +22,11 @@ export async function GET(request: NextRequest) {
     const category = (searchParams.get('category') ?? '').trim();
     const supplierId = (searchParams.get('supplierId') ?? '').trim();
     const sort = (searchParams.get('sort') ?? 'updatedAt:desc').split(':');
-    const orderBy = [{ [sort[0] as 'name' | 'updatedAt' | 'cost']: (sort[1] as 'asc' | 'desc') ?? 'desc' }];
+    const sortField = (sort[0] as 'name' | 'updatedAt' | 'cost');
+    const sortDir = (sort[1] === 'asc' ? 'asc' : 'desc') as Prisma.SortOrder;
+    const orderBy: Prisma.SkuOrderByWithRelationInput[] = [{ [sortField]: sortDir } as Prisma.SkuOrderByWithRelationInput];
 
-    const where = {
+    const where: Prisma.SkuWhereInput = {
       AND: [
         q
           ? {
@@ -40,7 +43,7 @@ export async function GET(request: NextRequest) {
         category ? { category: { contains: category } } : {},
         supplierId ? { supplierId } : {},
       ],
-    } as const;
+    };
 
     const [items, total] = await Promise.all([
       prisma.sku.findMany({
