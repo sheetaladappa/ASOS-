@@ -1,7 +1,9 @@
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 async function fetchInbound(id: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : (process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000');
   const res = await fetch(`${baseUrl}/api/inbound/${id}`, { next: { revalidate: 0 } });
   if (!res.ok) return null;
   const { item } = await res.json();
