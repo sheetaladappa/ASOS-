@@ -49,11 +49,10 @@ export default function Home() {
             }}
           >
             <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>
-              Smart Purchase Order Creation
+              Purchase Order Creation
             </div>
             <div style={{ fontSize: 13, color: '#4b5563', marginTop: 8 }}>
-              Automate procurement: generate POs from SKUs and quantities, approve,
-              send PDF/email, and track status.
+              Generate POs and view the PO list.
             </div>
           </div>
         </Link>
