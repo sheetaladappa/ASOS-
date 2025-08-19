@@ -107,18 +107,9 @@ export async function POST(request: NextRequest) {
     const data = parsed.data;
 
     // Get all active suppliers
-    const suppliers = await (await getPrisma()).supplier.findMany({
-      where: { status: 'active' },
-      orderBy: { name: 'asc' },
-    });
-
-    // Map supplier selection to actual supplier ID
-    const supplierIndex = parseInt(data.supplierId.replace('supplier-', ''), 10) - 1;
-    const supplier = suppliers[supplierIndex];
-
-    if (!supplier) {
-      return NextResponse.json({ error: 'Invalid supplier selected' }, { status: 400 });
-    }
+    // Expect supplierId to be a real Supplier.id now
+    const supplier = await (await getPrisma()).supplier.findUnique({ where: { id: String(data.supplierId) } });
+    if (!supplier) return NextResponse.json({ error: 'Invalid supplier selected' }, { status: 400 });
 
     // Check if SKU already exists
     const existingSku = await (await getPrisma()).sku.findFirst({

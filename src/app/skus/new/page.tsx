@@ -14,12 +14,14 @@ export default function NewSkuForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
+  const [addingSupplier, setAddingSupplier] = useState(false);
+  const [newSupplierName, setNewSupplierName] = useState('');
   const router = useRouter();
 
   useEffect(() => {
     async function fetchSuppliers() {
       try {
-        const response = await fetch('/api/suppliers');
+        const response = await fetch('/api/suppliers', { cache: 'no-store' });
         if (response.ok) {
           const data = await response.json();
           setSuppliers(data);
@@ -91,17 +93,57 @@ export default function NewSkuForm() {
         </label>
         <label>
           <div>Supplier</div>
-          <select name="supplierId" required defaultValue="" disabled={loading}>
-            <option value="" disabled>
-              {loading ? 'Loading suppliers...' : 'Select supplier'}
-            </option>
-            {suppliers.map((supplier, index) => (
-              <option key={supplier.id} value={`supplier-${index + 1}`}>
-                {supplier.name}
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <select name="supplierId" required defaultValue="" disabled={loading} style={{ flex: 1 }}>
+              <option value="" disabled>
+                {loading ? 'Loading suppliers...' : 'Select supplier'}
               </option>
-            ))}
-          </select>
+              {suppliers.map((supplier) => (
+                <option key={supplier.id} value={supplier.id}>
+                  {supplier.name}
+                </option>
+              ))}
+            </select>
+            <button type="button" onClick={() => setAddingSupplier(true)}>Add</button>
+          </div>
         </label>
+        {addingSupplier && (
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input
+              value={newSupplierName}
+              onChange={(e) => setNewSupplierName(e.target.value)}
+              placeholder="New supplier name"
+            />
+            <button
+              type="button"
+              onClick={async () => {
+                if (!newSupplierName.trim()) return;
+                setIsSubmitting(true);
+                try {
+                  const res = await fetch('/api/suppliers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: newSupplierName.trim(), status: 'active' }),
+                  });
+                  const data = await res.json();
+                  if (res.ok) {
+                    const created: Supplier = data.supplier || data;
+                    setSuppliers((prev) => [...prev, created].sort((a,b)=>a.name.localeCompare(b.name)));
+                    setAddingSupplier(false);
+                    setNewSupplierName('');
+                  } else {
+                    setError(data.error || 'Failed to add supplier');
+                  }
+                } catch (e) {
+                  setError('Network error while adding supplier');
+                } finally {
+                  setIsSubmitting(false);
+                }
+              }}
+            >Save</button>
+            <button type="button" onClick={() => { setAddingSupplier(false); setNewSupplierName(''); }}>Cancel</button>
+          </div>
+        )}
         <label>
           <div>Lead time (days)</div>
           <input name="leadTime" type="number" min="0" required placeholder="0" />
