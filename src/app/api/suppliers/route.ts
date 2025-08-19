@@ -3,6 +3,13 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
+    if (process.env.DISABLE_DB === '1') {
+      return NextResponse.json([
+        { id: 'mock-sup-1', name: 'Acme Textiles', status: 'active' },
+        { id: 'mock-sup-2', name: 'Global Beauty Co', status: 'active' },
+        { id: 'mock-sup-3', name: 'FastFab Ltd', status: 'active' },
+      ]);
+    }
     const suppliers = await prisma.supplier.findMany({
       where: { status: 'active' },
       orderBy: { name: 'asc' },

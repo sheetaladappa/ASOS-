@@ -9,6 +9,9 @@ const CreatePoSchema = z.object({
 
 export async function GET() {
   try {
+    if (process.env.DISABLE_DB === '1') {
+      return NextResponse.json({ items: [] });
+    }
     const items = await prisma.po.findMany({
       orderBy: { updatedAt: 'desc' },
       include: {
@@ -25,6 +28,12 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    if (process.env.DISABLE_DB === '1') {
+      return NextResponse.json({ success: true, po: {
+        id: 'mock-po-1', skuId: 'mock-sku-1', supplierId: 'mock-sup-1', quantity: 1, status: 'draft',
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), eta: null
+      } }, { status: 201 });
+    }
     let payload: any;
     const contentType = request.headers.get('content-type') || '';
     if (contentType.includes('application/json')) {

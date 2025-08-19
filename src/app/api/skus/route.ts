@@ -14,6 +14,9 @@ const SkuSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
+    if (process.env.DISABLE_DB === '1') {
+      return NextResponse.json({ items: [], total: 0, page: 1, pageSize: 20 });
+    }
     const { searchParams } = new URL(request.url);
     const page = Number(searchParams.get('page') ?? '1');
     const pageSize = Math.min(100, Number(searchParams.get('pageSize') ?? '20'));
@@ -72,6 +75,19 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    if (process.env.DISABLE_DB === '1') {
+      return NextResponse.json({ success: true, sku: {
+        id: 'mock-sku-1',
+        name: 'Sample SKU',
+        description: null,
+        category: 'Demo',
+        cost: 0,
+        supplierId: 'mock-sup-1',
+        leadTime: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      } }, { status: 201 });
+    }
     const formData = await request.formData();
     const raw = Object.fromEntries(formData.entries());
 

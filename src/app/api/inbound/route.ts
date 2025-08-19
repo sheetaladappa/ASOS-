@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET() {
+  if (process.env.DISABLE_DB === '1') {
+    return NextResponse.json({ items: [] });
+  }
   const items = await prisma.inbound.findMany({
     include: { po: { include: { sku: true, supplier: true } } },
     orderBy: { updatedAt: 'desc' },
@@ -11,6 +14,12 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    if (process.env.DISABLE_DB === '1') {
+      return NextResponse.json({ item: {
+        id: 'mock-inb-1', poId: 'mock-po-1', courier: 'DHL', trackingNumber: 'TRACK123', eta: null,
+        status: 'in_transit', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+      } }, { status: 201 });
+    }
     const contentType = req.headers.get('content-type') || '';
     let body: any;
     if (contentType.includes('application/json')) {
