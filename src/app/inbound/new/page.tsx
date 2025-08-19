@@ -16,6 +16,15 @@ export default function NewInboundPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  function generateTrackingNumber() {
+    const alnum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let body = '';
+    for (let i = 0; i < 14; i++) {
+      body += alnum[Math.floor(Math.random() * alnum.length)];
+    }
+    return `1Z${body}`;
+  }
+
   useEffect(() => {
     async function loadPos() {
       try {
@@ -77,7 +86,17 @@ export default function NewInboundPage() {
         </label>
         <label>
           <div>Tracking Number</div>
-          <input value={trackingNumber} onChange={(e) => setTrackingNumber(e.target.value)} placeholder="1Z..." />
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input
+              value={trackingNumber}
+              onChange={(e) => setTrackingNumber(e.target.value)}
+              placeholder="1Z..."
+              style={{ flex: 1 }}
+            />
+            <button type="button" onClick={() => setTrackingNumber(generateTrackingNumber())}>
+              Generate
+            </button>
+          </div>
         </label>
         <label>
           <div>ETA</div>
