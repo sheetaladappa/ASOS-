@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 // Lazy import prisma only when DB is enabled to avoid init when DISABLE_DB=1
-let prismaRef: typeof import('@prisma/client').PrismaClient | null = null;
-async function getPrisma() {
+let prismaRef: import('@prisma/client').PrismaClient | null = null;
+async function getPrisma(): Promise<import('@prisma/client').PrismaClient> {
   if (!prismaRef) {
     const mod = await import('@/lib/prisma');
-    // @ts-ignore
-    prismaRef = mod.prisma;
+    prismaRef = mod.prisma as import('@prisma/client').PrismaClient;
   }
-  // @ts-ignore
   return prismaRef;
 }
 import { Prisma } from '@prisma/client';
