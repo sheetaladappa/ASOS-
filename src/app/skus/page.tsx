@@ -27,6 +27,7 @@ interface Supplier {
 
 export default function SkuList() {
   const [items, setItems] = useState<Sku[]>([]);
+  const [showCreate, setShowCreate] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -214,10 +215,15 @@ export default function SkuList() {
         >
           Next
         </button>
-        <Link href="/skus/new" style={{ marginLeft: 'auto' }}>
-          <button>Create SKU</button>
-        </Link>
+        <button style={{ marginLeft: 'auto' }} onClick={() => setShowCreate((v)=>!v)}>
+          {showCreate ? 'Close Create' : 'Create SKU'}
+        </button>
       </div>
+      {showCreate && (
+        <div style={{ marginTop: 16, padding: 16, border: '1px solid #eee', borderRadius: 8 }}>
+          <iframe src="/skus/new" style={{ width: '100%', height: 560, border: '0' }} />
+        </div>
+      )}
     </section>
   );
 }

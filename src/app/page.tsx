@@ -11,7 +11,7 @@ export default function Home() {
           gap: 16,
         }}
       >
-        <Link href="/skus/new" style={{ textDecoration: 'none' }}>
+        <Link href="/skus" style={{ textDecoration: 'none' }}>
           <div
             style={{
               border: '1px solid #e5e7eb',
@@ -22,11 +22,9 @@ export default function Home() {
               boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
             }}
           >
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>
-              Create SKU
-            </div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>View & Create SKUs</div>
             <div style={{ fontSize: 13, color: '#4b5563', marginTop: 8 }}>
-              Add a new product SKU to the catalog.
+              Browse all SKUs and create new ones from the same page.
             </div>
           </div>
         </Link>
