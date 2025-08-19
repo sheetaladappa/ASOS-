@@ -1,5 +1,14 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+let prismaRef: typeof import('@prisma/client').PrismaClient | null = null;
+async function getPrisma() {
+  if (!prismaRef) {
+    const mod = await import('@/lib/prisma');
+    // @ts-ignore
+    prismaRef = mod.prisma;
+  }
+  // @ts-ignore
+  return prismaRef;
+}
 
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
   const { id } = params;
@@ -10,7 +19,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
       po: { sku: { name: 'Sample SKU' }, supplier: { name: 'Acme Textiles' } }
     } });
   }
-  const item = await prisma.inbound.findUnique({
+  const item = await (await getPrisma()).inbound.findUnique({
     where: { id },
     include: { po: { include: { sku: true, supplier: true } } },
   });
@@ -34,7 +43,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     if (!isNaN(d.getTime())) data.eta = d;
   }
   try {
-    const updated = await prisma.inbound.update({ where: { id }, data });
+    const updated = await (await getPrisma()).inbound.update({ where: { id }, data });
     return NextResponse.json({ item: updated });
   } catch (e) {
     return NextResponse.json({ error: 'Failed to update' }, { status: 400 });

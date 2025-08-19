@@ -1,11 +1,20 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+let prismaRef: typeof import('@prisma/client').PrismaClient | null = null;
+async function getPrisma() {
+  if (!prismaRef) {
+    const mod = await import('@/lib/prisma');
+    // @ts-ignore
+    prismaRef = mod.prisma;
+  }
+  // @ts-ignore
+  return prismaRef;
+}
 
 export async function GET() {
   if (process.env.DISABLE_DB === '1') {
     return NextResponse.json({ items: [] });
   }
-  const items = await prisma.inbound.findMany({
+  const items = await (await getPrisma()).inbound.findMany({
     include: { po: { include: { sku: true, supplier: true } } },
     orderBy: { updatedAt: 'desc' },
   });
@@ -39,7 +48,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'poId, courier, and trackingNumber are required' }, { status: 400 });
     }
 
-    const po = await prisma.po.findUnique({ where: { id: poId } });
+    const po = await (await getPrisma()).po.findUnique({ where: { id: poId } });
     if (!po) {
       return NextResponse.json({ error: 'PO not found' }, { status: 404 });
     }
@@ -49,7 +58,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid ETA date' }, { status: 400 });
     }
 
-    const created = await prisma.inbound.create({
+    const created = await (await getPrisma()).inbound.create({
       data: {
         poId,
         courier,

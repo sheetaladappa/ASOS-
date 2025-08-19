@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+let prismaRef: typeof import('@prisma/client').PrismaClient | null = null;
+async function getPrisma() {
+  if (!prismaRef) {
+    const mod = await import('@/lib/prisma');
+    // @ts-ignore
+    prismaRef = mod.prisma;
+  }
+  // @ts-ignore
+  return prismaRef;
+}
 import { z } from 'zod';
 
 const CreatePoSchema = z.object({
@@ -12,7 +21,7 @@ export async function GET() {
     if (process.env.DISABLE_DB === '1') {
       return NextResponse.json({ items: [] });
     }
-    const items = await prisma.po.findMany({
+    const items = await (await getPrisma()).po.findMany({
       orderBy: { updatedAt: 'desc' },
       include: {
         sku: { select: { id: true, name: true } },
@@ -50,12 +59,12 @@ export async function POST(request: NextRequest) {
 
     const { skuId, quantity } = parsed.data;
 
-    const sku = await prisma.sku.findUnique({ where: { id: skuId }, include: { supplier: true } });
+    const sku = await (await getPrisma()).sku.findUnique({ where: { id: skuId }, include: { supplier: true } });
     if (!sku || !sku.supplier) {
       return NextResponse.json({ error: 'SKU or Supplier not found' }, { status: 404 });
     }
 
-    const po = await prisma.po.create({
+    const po = await (await getPrisma()).po.create({
       data: {
         skuId: sku.id,
         supplierId: sku.supplierId,

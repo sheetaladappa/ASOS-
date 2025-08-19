@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+// Lazy import prisma only when DB is enabled to avoid init when DISABLE_DB=1
+let prismaRef: typeof import('@prisma/client').PrismaClient | null = null;
+async function getPrisma() {
+  if (!prismaRef) {
+    const mod = await import('@/lib/prisma');
+    // @ts-ignore
+    prismaRef = mod.prisma;
+  }
+  // @ts-ignore
+  return prismaRef;
+}
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
@@ -49,7 +59,7 @@ export async function GET(request: NextRequest) {
     };
 
     const [items, total] = await Promise.all([
-      prisma.sku.findMany({
+      (await getPrisma()).sku.findMany({
         where,
         orderBy,
         skip,
@@ -63,7 +73,7 @@ export async function GET(request: NextRequest) {
           },
         },
       }),
-      prisma.sku.count({ where }),
+      (await getPrisma()).sku.count({ where }),
     ]);
 
     return NextResponse.json({ items, total, page, pageSize });
@@ -99,7 +109,7 @@ export async function POST(request: NextRequest) {
     const data = parsed.data;
 
     // Get all active suppliers
-    const suppliers = await prisma.supplier.findMany({
+    const suppliers = await (await getPrisma()).supplier.findMany({
       where: { status: 'active' },
       orderBy: { name: 'asc' },
     });
@@ -113,7 +123,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if SKU already exists
-    const existingSku = await prisma.sku.findFirst({
+    const existingSku = await (await getPrisma()).sku.findFirst({
       where: {
         name: data.name,
         supplierId: supplier.id,
@@ -128,7 +138,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the SKU
-    const sku = await prisma.sku.create({
+    const sku = await (await getPrisma()).sku.create({
       data: {
         name: data.name,
         description: data.description || null,

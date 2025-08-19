@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
@@ -10,6 +9,7 @@ export async function GET() {
         { id: 'mock-sup-3', name: 'FastFab Ltd', status: 'active' },
       ]);
     }
+    const { prisma } = await import('@/lib/prisma');
     const suppliers = await prisma.supplier.findMany({
       where: { status: 'active' },
       orderBy: { name: 'asc' },
