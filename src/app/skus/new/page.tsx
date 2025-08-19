@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface Supplier {
   id: string;
@@ -61,7 +62,24 @@ export default function NewSkuForm() {
 
   return (
     <section>
-      <h2>Create SKU</h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+        <Link href="/skus" style={{ 
+          display: 'inline-flex', 
+          alignItems: 'center', 
+          gap: 8, 
+          padding: '8px 12px',
+          border: '1px solid #e5e7eb',
+          borderRadius: '6px',
+          textDecoration: 'none',
+          color: '#374151',
+          fontSize: '14px',
+          backgroundColor: 'white',
+          transition: 'all 150ms ease'
+        }}>
+          ← Back to SKUs
+        </Link>
+        <h2 style={{ margin: 0 }}>Create SKU</h2>
+      </div>
       {error && (
         <div style={{ 
           padding: '12px', 
@@ -152,7 +170,7 @@ export default function NewSkuForm() {
           <button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Creating...' : 'Create SKU'}
           </button>
-          <a href="/skus" style={{ padding: '8px 16px', textDecoration: 'none', border: '1px solid #ccc', borderRadius: '4px' }}>Cancel</a>
+          <Link href="/skus" style={{ padding: '8px 16px', textDecoration: 'none', border: '1px solid #ccc', borderRadius: '4px' }}>Cancel</Link>
         </div>
       </form>
     </section>

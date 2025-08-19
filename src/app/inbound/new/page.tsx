@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface PoOption { id: string; sku: { name: string }; supplier: { name: string } }
 
@@ -15,15 +16,6 @@ export default function NewInboundPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
-  function generateTrackingNumber() {
-    const alnum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let body = '';
-    for (let i = 0; i < 14; i++) {
-      body += alnum[Math.floor(Math.random() * alnum.length)];
-    }
-    return `1Z${body}`;
-  }
 
   useEffect(() => {
     async function loadPos() {
@@ -41,6 +33,15 @@ export default function NewInboundPage() {
     }
     loadPos();
   }, []);
+
+  function generateTrackingNumber() {
+    const alnum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let body = '';
+    for (let i = 0; i < 14; i++) {
+      body += alnum[Math.floor(Math.random() * alnum.length)];
+    }
+    return `1Z${body}`;
+  }
 
   async function handleSubmit() {
     setError(null);
@@ -64,7 +65,24 @@ export default function NewInboundPage() {
 
   return (
     <section>
-      <h2>Add Inbound Shipment</h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+        <Link href="/inbound" style={{ 
+          display: 'inline-flex', 
+          alignItems: 'center', 
+          gap: 8, 
+          padding: '8px 12px',
+          border: '1px solid #e5e7eb',
+          borderRadius: '6px',
+          textDecoration: 'none',
+          color: '#374151',
+          fontSize: '14px',
+          backgroundColor: 'white',
+          transition: 'all 150ms ease'
+        }}>
+          ← Back to Inbound
+        </Link>
+        <h2 style={{ margin: 0 }}>Add Inbound Shipment</h2>
+      </div>
       {error && (
         <div style={{ background: '#fee', border: '1px solid #fcc', color: '#a00', padding: 12, borderRadius: 4 }}>{error}</div>
       )}
@@ -112,7 +130,7 @@ export default function NewInboundPage() {
         </label>
         <div style={{ display: 'flex', gap: 12 }}>
           <button onClick={handleSubmit} disabled={!poId || !courier || !trackingNumber}>Create</button>
-          <a href="/inbound/list" style={{ padding: '8px 16px', border: '1px solid #ccc', borderRadius: 4, textDecoration: 'none' }}>Cancel</a>
+          <Link href="/inbound/list" style={{ padding: '8px 16px', border: '1px solid #ccc', borderRadius: 4, textDecoration: 'none' }}>Cancel</Link>
         </div>
       </div>
     </section>
