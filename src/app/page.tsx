@@ -36,7 +36,7 @@ export default function Home() {
         <Link href="/po" style={{ textDecoration: 'none' }}>
           <div
             style={{
-              border: '1px solid '#e5e7eb',
+              border: '1px solid #e5e7eb',
               borderRadius: 12,
               padding: 24,
               background: 'white',
