@@ -7,8 +7,8 @@ export default function Home() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))',
-          gap: 24,
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+          gap: 20,
           alignItems: 'stretch',
         }}
       >
@@ -16,12 +16,12 @@ export default function Home() {
           <div
             style={{
               border: '1px solid #e5e7eb',
-              borderRadius: 12,
-              padding: 24,
+              borderRadius: 8,
+              padding: 18,
               background: 'white',
               transition: 'box-shadow 150ms ease, transform 150ms ease',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
-              minHeight: 200,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              minHeight: 140,
               height: '100%',
               display: 'flex',
               flexDirection: 'column',
@@ -37,12 +37,12 @@ export default function Home() {
           <div
             style={{
               border: '1px solid #e5e7eb',
-              borderRadius: 12,
-              padding: 24,
+              borderRadius: 8,
+              padding: 18,
               background: 'white',
               transition: 'box-shadow 150ms ease, transform 150ms ease',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
-              minHeight: 200,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              minHeight: 140,
               height: '100%',
               display: 'flex',
               flexDirection: 'column',
@@ -61,12 +61,12 @@ export default function Home() {
           <div
             style={{
               border: '1px solid #e5e7eb',
-              borderRadius: 12,
-              padding: 24,
+              borderRadius: 8,
+              padding: 18,
               background: 'white',
               transition: 'box-shadow 150ms ease, transform 150ms ease',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
-              minHeight: 200,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              minHeight: 140,
               height: '100%',
               display: 'flex',
               flexDirection: 'column',
